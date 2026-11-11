@@ -5,7 +5,7 @@ import type { ActionResult } from "./types";
 import type { ExpenseRow } from "@/lib/executor";
 import { api, money } from "./api";
 
-const Chart = dynamic(() => import("./Chart"), { ssr: false, loading: () => <div className="h-60 animate-pulse rounded-lg bg-paper" /> });
+const Chart = dynamic(() => import("./Chart"), { ssr: false, loading: () => <div className="h-60 animate-pulse rounded-2xl bg-paper" /> });
 
 const LABELS: Record<string, string> = {
   add_expense: "Add expense", list_expenses: "Search expenses", summarize_spending: "Summarize",
@@ -14,7 +14,7 @@ const LABELS: Record<string, string> = {
 };
 
 const STATUS = {
-  success: { icon: "✓", cls: "bg-accent-soft text-accent", label: "Done" },
+  success: { icon: "✓", cls: "bg-sage-soft text-sage", label: "Done" },
   error: { icon: "!", cls: "bg-bad-soft text-bad", label: "Failed" },
   rejected: { icon: "⨯", cls: "bg-bad-soft text-bad", label: "Blocked" },
   pending_confirmation: { icon: "?", cls: "bg-warn-soft text-warn", label: "Needs your OK" },
@@ -39,21 +39,21 @@ export default function ResultCard({ initial, onChange }: { initial: ActionResul
   }
 
   return (
-    <div className={`rounded-xl border bg-card p-3 ${r.status === "pending_confirmation" ? "border-warn/50 shadow-[0_0_0_3px_var(--color-warn-soft)]" : "border-line"}`}>
+    <div className={`rise rounded-2xl border bg-card p-3.5 shadow-[0_10px_24px_-20px_rgba(120,70,80,.5)] ${r.status === "pending_confirmation" ? "border-gold/60 shadow-[0_0_0_4px_var(--color-gold-soft)]" : "border-line"}`}>
       <div className="flex items-start gap-2.5">
         <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${s.cls}`}>{s.icon}</span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 text-xs">
-            <span className="font-semibold uppercase tracking-wide text-muted">{LABELS[r.type] ?? r.type}</span>
-            <span className={`rounded px-1.5 py-px text-[11px] ${s.cls}`}>{s.label}</span>
+            <span className="eyebrow text-[10px] text-gold">{LABELS[r.type] ?? r.type}</span>
+            <span className={`rounded-full px-2 py-px text-[11px] ${s.cls}`}>{s.label}</span>
             {r.params !== undefined && (
-              <button onClick={() => setShowJson((v) => !v)} className="ml-auto text-[11px] text-muted underline-offset-2 hover:underline">
+              <button onClick={() => setShowJson((v) => !v)} className="ml-auto text-[11px] text-muted underline-offset-2 hover:text-accent hover:underline">
                 {showJson ? "hide" : "view"} action JSON
               </button>
             )}
           </div>
           <p className="mt-1 text-sm leading-snug">{r.message}</p>
-          {showJson && <pre className="scroll-thin mt-2 max-h-48 overflow-auto rounded-lg bg-ink p-2.5 text-[11px] leading-relaxed text-paper">{JSON.stringify(r.params, null, 2)}</pre>}
+          {showJson && <pre className="scroll-thin mt-2 max-h-48 overflow-auto rounded-xl bg-[#3d2f31] p-3 text-[11px] leading-relaxed text-[#f9ece6]">{JSON.stringify(r.params, null, 2)}</pre>}
         </div>
       </div>
 
@@ -62,10 +62,10 @@ export default function ResultCard({ initial, onChange }: { initial: ActionResul
           {r.preview && <ExpenseTable rows={r.preview} max={6} />}
           <div className="mt-3 flex gap-2">
             <button disabled={busy} onClick={() => decide("confirm")}
-              className={`rounded-lg px-3.5 py-1.5 text-sm font-medium text-white disabled:opacity-50 ${r.type === "delete_expenses" ? "bg-bad hover:bg-bad/90" : "bg-accent hover:bg-accent/90"}`}>
+              className={`rounded-full px-4 py-1.5 text-sm font-medium text-white transition disabled:opacity-50 ${r.type === "delete_expenses" ? "bg-bad hover:bg-bad/90" : "bg-accent hover:bg-accent/90"}`}>
               {busy ? "Working…" : r.type === "delete_expenses" ? `Yes, delete ${r.preview?.length ?? ""}` : "Confirm"}
             </button>
-            <button disabled={busy} onClick={() => decide("cancel")} className="rounded-lg border border-line bg-card px-3.5 py-1.5 text-sm hover:bg-paper disabled:opacity-50">Cancel</button>
+            <button disabled={busy} onClick={() => decide("cancel")} className="rounded-full border border-line bg-card px-4 py-1.5 text-sm transition hover:border-accent/40 hover:text-accent disabled:opacity-50">Cancel</button>
           </div>
         </div>
       )}
@@ -86,7 +86,7 @@ function DataView({ data }: { data: NonNullable<ActionResult["data"]> }) {
           {data.rows.map((row) => (
             <li key={row.label} className="grid grid-cols-[minmax(0,7rem)_1fr_auto] items-center gap-2 text-sm">
               <span className="truncate">{row.label}</span>
-              <span className="h-2 rounded-full bg-paper"><span className="block h-2 rounded-full bg-accent" style={{ width: `${(row.total / max) * 100}%` }} /></span>
+              <span className="h-2 rounded-full bg-paper"><span className="block h-2 rounded-full bg-gradient-to-r from-accent/70 to-accent" style={{ width: `${(row.total / max) * 100}%` }} /></span>
               <span className="num text-xs">{money(row.total)} <span className="text-muted">({row.count})</span></span>
             </li>
           ))}
@@ -98,11 +98,11 @@ function DataView({ data }: { data: NonNullable<ActionResult["data"]> }) {
     case "budget":
       return <BudgetBars items={data.items} />;
     case "conversion":
-      return <p className="num text-lg">{data.amount} {data.from} → <strong>{data.result} {data.to}</strong> <span className="text-xs text-muted">rate {data.rate} · {data.date}</span></p>;
+      return <p className="num text-lg">{data.amount} {data.from} → <strong className="font-serif text-2xl font-semibold text-accent">{data.result} {data.to}</strong> <span className="text-xs text-muted">rate {data.rate} · {data.date}</span></p>;
     case "file":
       return (
         <button onClick={() => download(data.filename, data.content, data.mime)}
-          className="inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent-soft px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-soft/70">
+          className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent-soft px-4 py-1.5 text-sm font-medium text-accent transition hover:-translate-y-0.5 hover:bg-accent-soft/70">
           ↓ Download {data.filename} <span className="text-xs font-normal">({data.rows} rows)</span>
         </button>
       );
@@ -115,7 +115,7 @@ export function BudgetBars({ items }: { items: { category: string; limit: number
   return (
     <ul className="space-y-2.5">
       {items.map((b) => {
-        const color = b.pct >= 100 ? "bg-bad" : b.pct >= 80 ? "bg-warn" : "bg-accent";
+        const color = b.pct >= 100 ? "bg-bad" : b.pct >= 80 ? "bg-warn" : "bg-sage";
         return (
           <li key={b.category} className="text-sm">
             <div className="flex justify-between"><span>{b.category}</span><span className="num text-xs">{money(b.spent)} / {money(b.limit)}</span></div>
@@ -133,7 +133,7 @@ export function ExpenseTable({ rows, max = 999 }: { rows: ExpenseRow[]; max?: nu
   return (
     <div className="scroll-thin overflow-x-auto">
       <table className="w-full text-sm">
-        <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-muted">
+        <thead><tr className="border-b border-gold/30 text-left text-[10px] uppercase tracking-[.18em] text-gold">
           <th className="py-1 pr-2 font-medium">#</th><th className="py-1 pr-2 font-medium">Date</th><th className="py-1 pr-2 font-medium">Merchant</th>
           <th className="py-1 pr-2 font-medium">Category</th><th className="py-1 text-right font-medium">Amount</th>
         </tr></thead>

@@ -1,27 +1,59 @@
 @import "tailwindcss";
 
-@theme {
-  --color-paper: #f5f2ea;
-  --color-card: #fffdf8;
-  --color-ink: #1d1c1a;
-  --color-muted: #6f6a60;
-  --color-line: #e4ded1;
-  --color-accent: #1f6f4a;
-  --color-accent-soft: #e3f0e8;
-  --color-warn: #a35f00;
-  --color-warn-soft: #fbf0dc;
-  --color-bad: #b42318;
-  --color-bad-soft: #fbe8e6;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+/* Invitation-stationery palette: ivory paper, dusty rose, champagne gold, sage. */
+@theme inline {
+  --color-paper: #fbf5f0;
+  --color-card: #fffdfa;
+  --color-ink: #4b3a3c;
+  --color-muted: #9b8582;
+  --color-line: #efdfd7;
+  --color-accent: #b9677a;
+  --color-accent-soft: #f9e8eb;
+  --color-gold: #b8935a;
+  --color-gold-soft: #f7eddd;
+  --color-sage: #6f8f72;
+  --color-sage-soft: #e8f0e5;
+  --color-warn: #a8712a;
+  --color-warn-soft: #fbf0de;
+  --color-bad: #b0404f;
+  --color-bad-soft: #fbe8ea;
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-script: var(--font-pinyon), "Pinyon Script", cursive;
+  --font-sans: var(--font-jost), "Jost", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-html, body { height: 100%; }
-body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); }
-.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+html, body { min-height: 100%; }
+body {
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  background-image:
+    radial-gradient(60rem 30rem at 10% -10%, #f6dfe2 0%, transparent 60%),
+    radial-gradient(50rem 28rem at 110% 0%, #f3e6d3 0%, transparent 55%),
+    radial-gradient(40rem 30rem at 50% 120%, #f4e3e6 0%, transparent 60%);
+  background-repeat: no-repeat;
+}
+/* Cormorant's default old-style figures dip below the line; money looks better with lining figures */
+.font-serif { font-variant-numeric: lining-nums; }
+::selection { background: #f2d3da; }
+
+/* Numbers: clean lining, tabular figures */
+.num { font-family: var(--font-sans); font-variant-numeric: tabular-nums lining-nums; letter-spacing: .01em; }
+
+/* Invitation card: soft shadow + inner gold hairline frame */
+.invite {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  box-shadow: inset 0 0 0 6px var(--color-card), inset 0 0 0 7px #ecdcc4, 0 18px 40px -24px rgba(120, 70, 80, .35);
+}
+.eyebrow { font-family: var(--font-sans); text-transform: uppercase; letter-spacing: .28em; font-size: 10.5px; }
+
 .scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 8px; }
-@keyframes pulse-dot { 0%, 80%, 100% { opacity: .2 } 40% { opacity: 1 } }
+@keyframes pulse-dot { 0%, 80%, 100% { opacity: .2; transform: scale(.8) } 40% { opacity: 1; transform: scale(1) } }
 .dot { animation: pulse-dot 1.2s infinite; }
 .dot:nth-child(2) { animation-delay: .2s } .dot:nth-child(3) { animation-delay: .4s }
+@keyframes rise { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+.rise { animation: rise .45s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .dot, .rise { animation: none; } }

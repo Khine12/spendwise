@@ -11,7 +11,7 @@ type Overview = { month: string; expenses: ExpenseRow[]; byCategory: { label: st
 type Audit = { id: number; request_id: string | null; event: string; action_type: string | null; status: string; message: string | null; detail: unknown; created_at: string };
 
 const STATUS_CLS: Record<string, string> = {
-  success: "text-accent", ok: "text-accent", info: "text-muted", error: "text-bad", rejected: "text-bad",
+  success: "text-sage", ok: "text-sage", info: "text-muted", error: "text-bad", rejected: "text-bad",
   invalid: "text-warn", pending_confirmation: "text-warn", cancelled: "text-muted",
 };
 
@@ -43,38 +43,41 @@ export default function Sidebar({ refreshKey, onDataChanged }: { refreshKey: num
   });
 
   return (
-    <aside className="flex min-h-[28rem] flex-col rounded-2xl border border-line bg-card lg:h-full lg:min-h-0">
-      <div className="flex items-center gap-1 border-b border-line p-2">
-        {([["ledger", "Ledger"], ["month", "This month"], ["audit", "Audit log"]] as const).map(([k, label]) => (
-          <button key={k} onClick={() => setTab(k)}
-            className={`rounded-lg px-3 py-1.5 text-sm ${tab === k ? "bg-ink text-paper" : "text-muted hover:bg-paper"}`}>{label}</button>
-        ))}
+    <aside className="invite flex min-h-[28rem] flex-col rounded-[28px] lg:h-full lg:min-h-0">
+      <div className="flex items-center justify-center gap-1 border-b border-line p-3">
+        <div className="flex gap-1 rounded-full border border-line bg-paper p-1">
+          {([["ledger", "Ledger"], ["month", "This month"], ["audit", "Audit log"]] as const).map(([k, label]) => (
+            <button key={k} onClick={() => setTab(k)}
+              className={`rounded-full px-3.5 py-1.5 text-sm transition ${tab === k ? "bg-accent text-white shadow-[0_6px_14px_-8px_rgba(185,103,122,.9)]" : "text-muted hover:text-accent"}`}>{label}</button>
+          ))}
+        </div>
       </div>
 
-      <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-4">
+      <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
         {err && <p className="mb-3 rounded-lg bg-bad-soft p-2 text-sm text-bad">{err}</p>}
         {!data ? <p className="text-sm text-muted">Loading…</p> : tab === "ledger" ? (
           data.expenses.length ? (
             <>
-              <p className="mb-2 text-xs text-muted">{data.expenses.length} expenses · newest first</p>
+              <p className="eyebrow mb-2 text-center text-gold">{data.expenses.length} expenses · newest first</p>
               <ExpenseTable rows={data.expenses} max={25} />
             </>
           ) : (
             <div className="py-10 text-center">
-              <p className="font-serif text-lg">Your ledger is empty</p>
-              <p className="mt-1 text-sm text-muted">Tell the agent about a purchase, or load sample data.</p>
-              <button onClick={seed} className="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent/90">Load sample data</button>
+              <p className="font-script text-3xl text-gold">A fresh page</p>
+              <p className="mt-1 font-serif text-xl">Your ledger is empty</p>
+              <p className="mt-1 text-sm font-light text-muted">Tell the agent about a purchase, or load sample data.</p>
+              <button onClick={seed} className="mt-5 rounded-full bg-accent px-5 py-2 text-sm font-medium tracking-wide text-white shadow-[0_8px_18px_-10px_rgba(185,103,122,.9)] transition hover:bg-accent/90">Load sample data</button>
             </div>
           )
         ) : tab === "month" ? (
           <div className="space-y-6">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted">Spent in {data.month}</p>
-              <p className="num font-serif text-3xl">{money(monthTotal)}</p>
+            <div className="text-center">
+              <p className="eyebrow text-gold">Spent in {data.month}</p>
+              <p className="mt-1 font-serif text-5xl font-medium text-accent">{money(monthTotal)}</p>
             </div>
             {data.byCategory.length > 0 && <Chart type="pie" points={data.byCategory} />}
             <div>
-              <p className="mb-2 text-xs uppercase tracking-wide text-muted">Budgets</p>
+              <p className="eyebrow mb-3 text-center text-gold">Budgets</p>
               {budgetItems.length ? <BudgetBars items={budgetItems} /> : <p className="text-sm text-muted">No budgets yet. Try “set a $200 food budget”.</p>}
             </div>
           </div>
@@ -82,7 +85,7 @@ export default function Sidebar({ refreshKey, onDataChanged }: { refreshKey: num
           <ol className="space-y-1">
             {audit.length === 0 && <p className="text-sm text-muted">Nothing logged yet.</p>}
             {audit.map((a) => (
-              <li key={a.id} className="rounded-lg border border-line/70 text-xs">
+              <li key={a.id} className="overflow-hidden rounded-xl border border-line/70 bg-card text-xs">
                 <button onClick={() => setOpenRow(openRow === a.id ? null : a.id)} className="flex w-full items-start gap-2 p-2 text-left hover:bg-paper">
                   <span className="num shrink-0 text-muted">{new Date(a.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
                   <span className="shrink-0 font-semibold uppercase tracking-wide">{a.event}</span>
@@ -101,8 +104,8 @@ export default function Sidebar({ refreshKey, onDataChanged }: { refreshKey: num
         )}
       </div>
 
-      <div className="flex items-center justify-between border-t border-line px-4 py-2 text-xs text-muted">
-        <span>Data is private to this browser</span>
+      <div className="flex items-center justify-between border-t border-line px-5 py-2.5 text-xs text-muted">
+        <span className="font-serif text-sm italic">Data is private to this browser</span>
         <span className="flex gap-3">
           <button onClick={seed} className="hover:text-ink">Load sample</button>
           <button onClick={reset} className="hover:text-bad">Reset</button>
